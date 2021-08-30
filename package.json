@@ -1,0 +1,38 @@
+{
+  "name": "trello",
+  "version": "1.0.0",
+  "description": "final project",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha './tests/**.test.js'",
+    "test:debug": "NODE_DEBUG=request npm run test",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sirtsova/trello.git"
+  },
+  "author": "Valeriya Sirtsova",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sirtsova/trello/issues"
+  },
+  "homepage": "https://github.com/sirtsova/trello#readme",
+  "mocha": {
+    "timeout": 15000,
+    "slow": 5000
+  },
+  "dependencies": {
+    "chai": "^4.3.4",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "faker": "^5.5.3",
+    "mocha": "^9.1.0",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.1",
+    "request-promise": "^4.2.6"
+  }
+}
