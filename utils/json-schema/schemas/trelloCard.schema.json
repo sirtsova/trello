@@ -1,0 +1,367 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "required": [
+      "id",
+      "checkItemStates",
+      "closed",
+      "dateLastActivity",
+      "desc",
+      "dueReminder",
+      "idBoard",
+      "idList",
+      "idMembersVoted",
+      "idShort",
+      "idAttachmentCover",
+      "idLabels",
+      "manualCoverAttachment",
+      "name",
+      "pos",
+      "shortLink",
+      "isTemplate",
+      "cardRole",
+      "dueComplete",
+      "due",
+      "email",
+      "labels",
+      "shortUrl",
+      "start",
+      "url",
+      "cover",
+      "idMembers",
+      "badges",
+      "subscribed",
+      "idChecklists"
+    ],
+    "properties": {
+      "id": {
+        "$id": "#/properties/id",
+        "type": "string"
+      },
+      "checkItemStates": {
+        "$id": "#/properties/checkItemStates",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/checkItemStates/items"
+        }
+      },
+      "closed": {
+        "$id": "#/properties/closed",
+        "type": "boolean"
+      },
+      "dateLastActivity": {
+        "$id": "#/properties/dateLastActivity",
+        "type": "string"
+      },
+      "desc": {
+        "$id": "#/properties/desc",
+        "type": "string"
+      },
+      "descData": {
+        "$id": "#/properties/descData",
+        "anyOf": [
+          {
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "required": [],
+        "properties": {
+          "emoji": {
+            "$id": "#/properties/descData/properties/emoji",
+            "type": "object",
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "dueReminder": {
+        "$id": "#/properties/dueReminder",
+        "type": "null"
+      },
+      "idBoard": {
+        "$id": "#/properties/idBoard",
+        "type": "string"
+      },
+      "idList": {
+        "$id": "#/properties/idList",
+        "type": "string"
+      },
+      "idMembersVoted": {
+        "$id": "#/properties/idMembersVoted",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/idMembersVoted/items"
+        }
+      },
+      "idShort": {
+        "$id": "#/properties/idShort",
+        "type": "integer"
+      },
+      "idAttachmentCover": {
+        "$id": "#/properties/idAttachmentCover",
+        "type": "null"
+      },
+      "idLabels": {
+        "$id": "#/properties/idLabels",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/idLabels/items"
+        }
+      },
+      "manualCoverAttachment": {
+        "$id": "#/properties/manualCoverAttachment",
+        "type": "boolean"
+      },
+      "name": {
+        "$id": "#/properties/name",
+        "type": "string"
+      },
+      "pos": {
+        "$id": "#/properties/pos",
+        "type": "integer"
+      },
+      "shortLink": {
+        "$id": "#/properties/shortLink",
+        "type": "string"
+      },
+      "isTemplate": {
+        "$id": "#/properties/isTemplate",
+        "type": "boolean"
+      },
+      "cardRole": {
+        "$id": "#/properties/cardRole",
+        "type": "null"
+      },
+      "dueComplete": {
+        "$id": "#/properties/dueComplete",
+        "type": "boolean"
+      },
+      "due": {
+        "$id": "#/properties/due",
+        "type": "null"
+      },
+      "email": {
+        "$id": "#/properties/email",
+        "type": "null"
+      },
+      "labels": {
+        "$id": "#/properties/labels",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/labels/items"
+        }
+      },
+      "shortUrl": {
+        "$id": "#/properties/shortUrl",
+        "type": "string"
+      },
+      "start": {
+        "$id": "#/properties/start",
+        "type": "null"
+      },
+      "url": {
+        "$id": "#/properties/url",
+        "type": "string"
+      },
+      "cover": {
+        "$id": "#/properties/cover",
+        "type": "object",
+        "required": [
+          "idAttachment",
+          "color",
+          "idUploadedBackground",
+          "size",
+          "brightness",
+          "idPlugin"
+        ],
+        "properties": {
+          "idAttachment": {
+            "$id": "#/properties/cover/properties/idAttachment",
+            "type": "null"
+          },
+          "color": {
+            "$id": "#/properties/cover/properties/color",
+            "type": "null"
+          },
+          "idUploadedBackground": {
+            "$id": "#/properties/cover/properties/idUploadedBackground",
+            "type": "null"
+          },
+          "size": {
+            "$id": "#/properties/cover/properties/size",
+            "type": "string"
+          },
+          "brightness": {
+            "$id": "#/properties/cover/properties/brightness",
+            "type": "string"
+          },
+          "idPlugin": {
+            "$id": "#/properties/cover/properties/idPlugin",
+            "type": "null"
+          }
+        },
+        "additionalProperties": false
+      },
+      "idMembers": {
+        "$id": "#/properties/idMembers",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/idMembers/items"
+        }
+      },
+      "attachments": {
+        "$id": "#/properties/attachments",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/attachments/items"
+        }
+      },
+      "badges": {
+        "$id": "#/properties/badges",
+        "type": "object",
+        "required": [
+          "attachmentsByType",
+          "location",
+          "votes",
+          "viewingMemberVoted",
+          "subscribed",
+          "fogbugz",
+          "checkItems",
+          "checkItemsChecked",
+          "checkItemsEarliestDue",
+          "comments",
+          "attachments",
+          "description",
+          "due",
+          "dueComplete",
+          "start"
+        ],
+        "properties": {
+          "attachmentsByType": {
+            "$id": "#/properties/badges/properties/attachmentsByType",
+            "type": "object",
+            "required": [
+              "trello"
+            ],
+            "properties": {
+              "trello": {
+                "$id": "#/properties/badges/properties/attachmentsByType/properties/trello",
+                "type": "object",
+                "required": [
+                  "board",
+                  "card"
+                ],
+                "properties": {
+                  "board": {
+                    "$id": "#/properties/badges/properties/attachmentsByType/properties/trello/properties/board",
+                    "type": "integer"
+                  },
+                  "card": {
+                    "$id": "#/properties/badges/properties/attachmentsByType/properties/trello/properties/card",
+                    "type": "integer"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "location": {
+            "$id": "#/properties/badges/properties/location",
+            "type": "boolean"
+          },
+          "votes": {
+            "$id": "#/properties/badges/properties/votes",
+            "type": "integer"
+          },
+          "viewingMemberVoted": {
+            "$id": "#/properties/badges/properties/viewingMemberVoted",
+            "type": "boolean"
+          },
+          "subscribed": {
+            "$id": "#/properties/badges/properties/subscribed",
+            "type": "boolean"
+          },
+          "fogbugz": {
+            "$id": "#/properties/badges/properties/fogbugz",
+            "type": "string"
+          },
+          "checkItems": {
+            "$id": "#/properties/badges/properties/checkItems",
+            "type": "integer"
+          },
+          "checkItemsChecked": {
+            "$id": "#/properties/badges/properties/checkItemsChecked",
+            "type": "integer"
+          },
+          "checkItemsEarliestDue": {
+            "$id": "#/properties/badges/properties/checkItemsEarliestDue",
+            "type": "null"
+          },
+          "comments": {
+            "$id": "#/properties/badges/properties/comments",
+            "type": "integer"
+          },
+          "attachments": {
+            "$id": "#/properties/badges/properties/attachments",
+            "type": "integer"
+          },
+          "description": {
+            "$id": "#/properties/badges/properties/description",
+            "type": "boolean"
+          },
+          "due": {
+            "$id": "#/properties/badges/properties/due",
+            "type": "null"
+          },
+          "dueComplete": {
+            "$id": "#/properties/badges/properties/dueComplete",
+            "type": "boolean"
+          },
+          "start": {
+            "$id": "#/properties/badges/properties/start",
+            "type": "null"
+          }
+        },
+        "additionalProperties": false
+      },
+      "subscribed": {
+        "$id": "#/properties/subscribed",
+        "type": "boolean"
+      },
+      "idChecklists": {
+        "$id": "#/properties/idChecklists",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/idChecklists/items"
+        }
+      },
+      "stickers": {
+        "$id": "#/properties/stickers",
+        "type": "array",
+        "additionalItems": true,
+        "items": {
+          "$id": "#/properties/stickers/items"
+        }
+      },
+      "limits": {
+        "$id": "#/properties/limits",
+        "type": "object",
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
