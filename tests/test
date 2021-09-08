@@ -1,0 +1,10 @@
+describe('Unable to prossed requests without authentication', () => {
+    it('Error message returned when creating a board as an authenticated member', async () => {
+      const err = await guard(async () => unAuthenticatedApi.createBoard(factory.board()));
+      console.log(err);
+
+     
+      expect(err).to.have.property('statusCode', 401);
+      expect(err).to.have.property('message', '401 - "invalid key"');
+    });
+  });

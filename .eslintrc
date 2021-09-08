@@ -1,0 +1,54 @@
+{
+    "env": {
+      "node": true,
+      "es6": true,
+      "mocha": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "impliedStrict": true,
+        "arrowFunctions": true,
+        "classes": true
+      }
+    },
+    "extends": [
+      "airbnb-base"
+    ],
+    "plugins": [],
+    "rules": {
+      "prefer-arrow-callback": "off",
+      "eqeqeq": [
+        "error",
+        "always"
+      ],
+      "no-console": 0,
+      "arrow-body-style": 0,
+      "max-len": [
+        1,
+        {
+          "code": 160
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "*.test.js",
+          "*.test.jsx"
+        ],
+        "env": {
+          "node": true,
+          "mocha": true
+        },
+        "rules": {
+          "id-length": 0,
+          "func-names": 0,
+          "no-unused-expressions": [
+            0
+          ]
+        }
+      }
+    ]
+  }
