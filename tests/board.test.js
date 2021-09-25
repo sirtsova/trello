@@ -1,86 +1,50 @@
 const { expect } = require('chai');
-const { before } = require('mocha');
 const guard = require('../utils/guard');
-const factory = require('../src/factory/boardsApi-factory');
-const Boards = require('../src/Board');
+const factory = require('../src/factory/trello-factory');
+const TrelloApi = require('../src/TrelloApi');
+const { validateSchema } = require('../utils/json-schema/validate-schema');
 
 describe('Trello Boards HTTP requests (/1/boards/)', () => {
   let api;
+  let nonAuthorizedApi;
   const invalidId = '76432424487';
+  async function cleanUp() {
+    const boardsArr = await api.getAllMemberBoards();
+
+    await Promise.all(boardsArr.map((board) => {
+      return api.deleteBoard(board.id);
+    }));
+  }
 
   before(async () => {
-    api = new Boards();
+    api = new TrelloApi();
+    api.authenticate();
+    nonAuthorizedApi = new TrelloApi();
 
-    const searchResponse = await api.getAllBoards();
-
-    await Promise.all(searchResponse.map((user) => {
-      return api.deleteBoard(user.id);
-    }));
+    cleanUp();
   });
 
   afterEach(async () => {
-    const searchResponse = await api.getAllBoards();
-
-    await Promise.all(searchResponse.map((user) => {
-      return api.deleteBoard(user.id);
-    }));
+    cleanUp();
   });
 
-  describe('Can not create HTTP board requests without authorization', () => {
-    let unauthorized;
-    before(async () => {
-      unauthorized = new Boards();
-      unauthorized.unAuthenticate();
-    });
-
-    it('Error message returned when creating a board with empty key and token value', async () => {
-      const err = await guard(async () => unauthorized.createBoard(factory.board()));
-
-      expect(err).to.be.instanceOf(Error);
-      expect(err).to.have.property('statusCode', 401);
-      expect(err).to.have.property('error', 'invalid key');
-    });
-
-    it('Error message returned when getting a board with empty key and token value', async () => {
-      const newBoard = api.createBoard(factory.board());
-      const err = await guard(async () => unauthorized.getBoard(newBoard.id));
-
-      expect(err).to.be.instanceOf(Error);
-      expect(err).to.have.property('statusCode', 401);
-      expect(err).to.have.property('error', 'invalid key');
-    });
-
-    it('Error message returned when updating a board with empty key and token value', async () => {
-      const newBoard = api.createBoard(factory.board());
-      const err = await guard(async () => unauthorized.updateBoard(newBoard.id, {}));
-
-      expect(err).to.be.instanceOf(Error);
-      expect(err).to.have.property('statusCode', 401);
-      expect(err).to.have.property('error', 'invalid key');
-    });
-
-    it('Error message returned when deleting a board with empty key and token value', async () => {
-      const newBoard = api.createBoard(factory.board());
-      const err = await guard(async () => unauthorized.deleteBoard(newBoard.id));
-
-      expect(err).to.be.instanceOf(Error);
-      expect(err).to.have.property('statusCode', 401);
-      expect(err).to.have.property('error', 'invalid key');
-    });
-  });
-
-  describe('Create board (POST /1/boards/)', async () => {
+  describe('Create board (POST /1/boards/)', () => {
     it('Create board with with required pharameters', async () => {
       const board = {
         name: 'Test Board',
-        desc: 'Desrpiption for the board',
       };
-      const request = await api.createBoard(board, true);
+      const requestObj = await api.createBoard(board, true);
 
-      expect(request.body).to.have.property('id', request.body.id);
-      expect(request.body).to.have.property('name', 'Test Board');
-      expect(request.body).to.have.property('desc', 'Desrpiption for the board');
-      expect(request).to.have.property('statusCode', 200);
+      validateSchema('createBoard', requestObj.body);
+      expect(requestObj).to.have.property('statusCode', 200);
+      expect(requestObj.body).to.have.property('id', requestObj.body.id);
+      expect(requestObj.body).to.have.property('id').that.has.lengthOf(24);
+      expect(requestObj.body).to.have.property('name', board.name);
+      expect(requestObj.body).to.have.property('desc', '');
+      expect(requestObj.body).to.have.property('closed', false);
+      expect(requestObj.body).to.have.property('pinned', false);
+      expect(requestObj.body).to.have.property('url').that.includes('https://trello.com/b/');
+      expect(requestObj.body).to.have.property('shortUrl').that.includes('https://trello.com/b/');
     });
 
     it('Can not create board without required pharameters', async () => {
@@ -116,17 +80,20 @@ describe('Trello Boards HTTP requests (/1/boards/)', () => {
     });
   });
 
-  describe('Get board by ID (GET /1/boards/{id})', async () => {
+  describe('Get board by ID (GET /1/boards/{id})', () => {
     it('Get board by ID', async () => {
       const newBoard = await api.createBoard(factory.board());
-      const request = await api.getBoard(newBoard.id);
+      const gotBoard = await api.getBoard(newBoard.id);
 
-      expect(request).to.have.property('id', newBoard.id);
-      expect(request).to.have.property('name', newBoard.name);
-      expect(request).to.have.property('desc', newBoard.desc);
-      expect(request).to.have.property('idOrganization', newBoard.idOrganization);
-      expect(request).to.have.property('url', newBoard.url);
-      expect(request).to.have.property('shortUrl', newBoard.shortUrl);
+      validateSchema('createBoard', gotBoard);
+      delete newBoard.limits;
+      expect(gotBoard).to.deep.equal(newBoard);
+      expect(gotBoard).to.have.property('id', newBoard.id);
+      expect(gotBoard).to.have.property('name', newBoard.name);
+      expect(gotBoard).to.have.property('desc', newBoard.desc);
+      expect(gotBoard).to.have.property('idOrganization', newBoard.idOrganization);
+      expect(gotBoard).to.have.property('url', newBoard.url);
+      expect(gotBoard).to.have.property('shortUrl', newBoard.shortUrl);
     });
 
     it('Error returned when getting board with invalid ID', async () => {
@@ -138,35 +105,24 @@ describe('Trello Boards HTTP requests (/1/boards/)', () => {
     });
   });
 
-  describe('Get boards member belongs to', async () => {
+  describe('Get boards member belongs to', () => {
     it('Get boards', async () => {
-      const user1 = {
-        ...factory.board(),
-      };
-
-      const user2 = {
-        ...factory.board(),
-      };
-
-      const user3 = {
-        ...factory.board(),
-      };
-
       const myBoardsArray = await Promise.all([
-        api.createBoard(user1),
-        api.createBoard(user2),
-        api.createBoard(user3),
+        api.createBoard(factory.board()),
+        api.createBoard(factory.board()),
+        api.createBoard(factory.board()),
       ]);
 
       myBoardsArray.forEach((board) => {
         expect(board).to.have.property('name').that.is.a('string');
+        expect(board).to.have.property('desc').that.is.a('string');
       });
-      const request = await api.getAllBoards();
-      expect(request).to.be.an('array').that.has.lengthOf(3);
+      const boardsList = await api.getAllMemberBoards();
+      expect(boardsList).to.be.an('array').that.has.lengthOf(3);
     });
   });
 
-  describe('Update board by ID (PUT /1/boards/{id})', async () => {
+  describe('Update board by ID (PUT /1/boards/{id})', () => {
     it('Update board by ID', async () => {
       const newBoard = await api.createBoard(factory.board());
 
@@ -174,33 +130,30 @@ describe('Trello Boards HTTP requests (/1/boards/)', () => {
         name: 'Updated Name',
       };
 
-      const request = await api.updateBoard(newBoard.id, boardToUpdate, true);
+      const updatedBoardObject = await api.updateBoard(newBoard.id, boardToUpdate, true);
 
-      expect(request).to.have.property('statusCode', 200);
-      expect(request.body).to.have.property('id', newBoard.id);
-      expect(request.body).to.have.property('name', 'Updated Name');
-      expect(request.body).to.be.an('object');
+      validateSchema('createBoard', updatedBoardObject.body);
+      expect(updatedBoardObject).to.have.property('statusCode', 200);
+      expect(updatedBoardObject.body).to.have.property('id', newBoard.id);
+      expect(updatedBoardObject.body).to.have.property('name', boardToUpdate.name);
+      expect(updatedBoardObject.body).to.be.an('object');
     });
 
     it('Can not update board with invalid ID', async () => {
-      const boardToUpdate = {
-        name: 'Updated Name',
-      };
-
-      const err = await guard(async () => api.updateBoard(invalidId, boardToUpdate));
+      const err = await guard(async () => api.updateBoard(invalidId, factory.board()));
       expect(err).to.be.instanceof(Error);
       expect(err).to.have.property('statusCode', 400);
       expect(err).to.have.property('error', 'invalid id');
     });
   });
 
-  describe('Delete board by ID (DELETE /1/boards/{id})', async () => {
+  describe('Delete board by ID (DELETE /1/boards/{id})', () => {
     it('Delete board by ID', async () => {
       const newBoard = await api.createBoard(factory.board());
 
-      const deleteRequest = await api.deleteBoard(newBoard.id, true);
-      expect(deleteRequest).to.have.property('statusCode', 200);
-      expect(deleteRequest.body).to.have.property('_value', null);
+      const deleteRequestObj = await api.deleteBoard(newBoard.id, true);
+      expect(deleteRequestObj).to.have.property('statusCode', 200);
+      expect(deleteRequestObj.body).to.have.property('_value', null);
 
       const err = await guard(async () => api.getBoard(newBoard.id));
 
@@ -215,6 +168,43 @@ describe('Trello Boards HTTP requests (/1/boards/)', () => {
       expect(err).to.be.instanceof(Error);
       expect(err).to.have.property('statusCode', 400);
       expect(err).to.have.property('error', 'invalid id');
+    });
+  });
+
+  describe('Can not create HTTP board requests without authorization', () => {
+    it('Error message returned when creating a board with empty key and token value', async () => {
+      const err = await guard(async () => nonAuthorizedApi.createBoard(factory.board()));
+
+      expect(err).to.be.instanceOf(Error);
+      expect(err).to.have.property('statusCode', 401);
+      expect(err).to.have.property('error', 'invalid key');
+    });
+
+    it('Error message returned when getting a board with empty key and token value', async () => {
+      const newBoard = api.createBoard(factory.board());
+      const err = await guard(async () => nonAuthorizedApi.getBoard(newBoard.id));
+
+      expect(err).to.be.instanceOf(Error);
+      expect(err).to.have.property('statusCode', 401);
+      expect(err).to.have.property('error', 'invalid key');
+    });
+
+    it('Error message returned when updating a board with empty key and token value', async () => {
+      const newBoard = api.createBoard(factory.board());
+      const err = await guard(async () => nonAuthorizedApi.updateBoard(newBoard.id, {}));
+
+      expect(err).to.be.instanceOf(Error);
+      expect(err).to.have.property('statusCode', 401);
+      expect(err).to.have.property('error', 'invalid key');
+    });
+
+    it('Error message returned when deleting a board with empty key and token value', async () => {
+      const newBoard = api.createBoard(factory.board());
+      const err = await guard(async () => nonAuthorizedApi.deleteBoard(newBoard.id));
+
+      expect(err).to.be.instanceOf(Error);
+      expect(err).to.have.property('statusCode', 401);
+      expect(err).to.have.property('error', 'invalid key');
     });
   });
 });
